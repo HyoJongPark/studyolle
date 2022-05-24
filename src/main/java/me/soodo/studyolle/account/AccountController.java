@@ -19,8 +19,7 @@ import javax.validation.Valid;
 public class AccountController {
 
     private final SignUpFormValidator signUpFormValidator;
-    private final AccountRepository accountRepository;
-    private final JavaMailSender javaMailSender;
+    private final AccountService accountService;
 
     @GetMapping("/sign-up")
     public String signUpForm(Model model) {
@@ -34,23 +33,8 @@ public class AccountController {
         if (result.hasErrors()) {
             return "account/sign-up";
         }
-        Account account = Account.builder()
-                .email(signUpForm.getEmail())
-                .nickname(signUpForm.getEmail())
-                .password(signUpForm.getPassword()) //TODO encoding 해야한다.(위험)
-                .studyCreatedByWeb(true)
-                .studyEnrollmentResultByWeb(true)
-                .studyUpdatedByWeb(true)
-                .build();
-        Account newAccount = accountRepository.save(account);
 
-        newAccount.generateEmailCheckToken();
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(newAccount.getEmail());
-        mailMessage.setSubject("스터디올래, 회원 가입 이증");
-        mailMessage.setText("/check-email-token?token=" + newAccount.getEmailCheckToken()
-                + "&email=" + newAccount.getEmail());
-        javaMailSender.send(mailMessage);
+        accountService.processNewAccount(signUpForm);
 
         return "redirect:/";
     }
