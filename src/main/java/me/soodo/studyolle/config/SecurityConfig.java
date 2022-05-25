@@ -1,5 +1,7 @@
 package me.soodo.studyolle.config;
 
+import lombok.RequiredArgsConstructor;
+import me.soodo.studyolle.account.AccountService;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,10 +10,18 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+
+import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final AccountService accountService;
+    private final DataSource dataSource;
 
     /**
      * Spring Security 5.7.x 부터 WebSecurityConfigurerAdapter 는 Deprecated.
@@ -26,7 +36,10 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().loginPage("/login").permitAll()
-                .and().logout().logoutSuccessUrl("/")
+                .and()
+                .logout().logoutSuccessUrl("/")
+                .and()
+                .rememberMe().userDetailsService(accountService).tokenRepository(tokenRepository())
                 .and().build();
     }
 
@@ -35,5 +48,12 @@ public class SecurityConfig {
         return (web) -> web.ignoring()
                 .mvcMatchers("/node_modules/**")
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+    }
+
+    @Bean
+    public PersistentTokenRepository tokenRepository() {
+        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
+        tokenRepository.setDataSource(dataSource);
+        return tokenRepository;
     }
 }
