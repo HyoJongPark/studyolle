@@ -11,10 +11,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -35,12 +35,15 @@ class SettingsControllerTest {
     @Autowired
     AccountRepository accountRepository;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     @BeforeEach
     void before() {
         SignUpForm signUpForm = new SignUpForm();
         signUpForm.setNickname("park");
         signUpForm.setEmail("email@email.com");
-        signUpForm.setPassword("12345678");
+        signUpForm.setPassword("87654321");
         accountService.processNewAccount(signUpForm);
     }
 
@@ -50,10 +53,9 @@ class SettingsControllerTest {
     }
 
     @WithUserDetails(value = "park", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    @DisplayName("프로필 수정  - 입력값 정상")
+    @DisplayName("프로필 수정 폼")
     @Test
     void updateProfileForm() throws Exception {
-        String bio = "짧은 소개를 수정하는 경우.";
         mockMvc.perform(get(SettingsController.SETTINGS_PROFILE_URL))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("account"))
@@ -92,5 +94,54 @@ class SettingsControllerTest {
 
         Account account = accountRepository.findByNickname("park");
         assertNull(account.getBio());
+    }
+
+    @WithUserDetails(value = "park", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @DisplayName("비밀번호 수정 폼")
+    @Test
+    void updatePasswordForm() throws Exception {
+        mockMvc.perform(get(SettingsController.SETTINGS_PASSWORD_URL))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("passwordForm"));
+    }
+
+
+    @WithUserDetails(value = "park", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @DisplayName("비밀번호 수정하기 - 입력값 정상")
+    @Test
+    void updatePassword() throws Exception {
+        String newPassword = "12345678";
+        String newPasswordConfirm = "12345678";
+        mockMvc.perform(post(SettingsController.SETTINGS_PASSWORD_URL)
+                        .param("newPassword", newPassword)
+                        .param("newPasswordConfirm", newPasswordConfirm)
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(SettingsController.SETTINGS_PROFILE_URL))
+                .andExpect(flash().attributeExists("message"));
+
+        Account account = accountRepository.findByNickname("park");
+        assertTrue(passwordEncoder.matches(newPassword, account.getPassword()));
+    }
+
+    @WithUserDetails(value = "park", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @DisplayName("비밀번호 수정하기 - 입력값 에러")
+    @Test
+    void updatePassword_error() throws Exception {
+        String newPassword = "12345678";
+        String newPasswordConfirm = "********";
+        mockMvc.perform(post(SettingsController.SETTINGS_PASSWORD_URL)
+                        .param("newPassword", newPassword)
+                        .param("newPasswordConfirm", newPasswordConfirm)
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name(SettingsController.SETTINGS_PASSWORD_VIEW_NAME))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("passwordForm"))
+                .andExpect(model().hasErrors());
+
+        Account account = accountRepository.findByNickname("park");
+        assertFalse(passwordEncoder.matches(newPassword, account.getPassword()));
     }
 }
