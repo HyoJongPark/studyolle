@@ -25,6 +25,9 @@ public class SettingsController {
     public static final String SETTINGS_PASSWORD_VIEW_NAME = "settings/password";
     public static final String SETTINGS_PASSWORD_URL = "/settings/password";
 
+    private static final String SETTINGS_NOTIFICATIONS_VIEW_NAME = "settings/notifications";;
+    private static final String SETTINGS_NOTIFICATIONS_URL = "/settings/notifications";;
+
     private final AccountService accountService;
 
     @InitBinder("passwordForm")
@@ -71,5 +74,25 @@ public class SettingsController {
         accountService.updatePassword(account, passwordForm.getNewPassword());
         attributes.addFlashAttribute("message", "비밀번호를 수정했습니다.");
         return "redirect:" + SETTINGS_PROFILE_URL;
+    }
+
+    @GetMapping(SETTINGS_NOTIFICATIONS_URL)
+    public String alarmUpdateForm(@CurrentUser Account account, Model model) {
+        model.addAttribute(account);
+        model.addAttribute("notifications", new Notifications(account));
+        return SETTINGS_NOTIFICATIONS_VIEW_NAME;
+    }
+
+    @PostMapping(SETTINGS_NOTIFICATIONS_URL)
+    public String updateAlarm(@CurrentUser Account account, @Valid Notifications notifications,
+                                 Errors errors, Model model, RedirectAttributes attributes) {
+        if (errors.hasErrors()) {
+            model.addAttribute(account);
+            return SETTINGS_NOTIFICATIONS_VIEW_NAME;
+        }
+
+        accountService.updateAlarm(account, notifications);
+        attributes.addFlashAttribute("message", "알람을 수정했습니다.");
+        return "redirect:" + SETTINGS_NOTIFICATIONS_URL;
     }
 }
