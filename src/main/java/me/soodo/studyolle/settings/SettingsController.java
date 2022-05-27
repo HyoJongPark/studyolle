@@ -26,16 +26,25 @@ public class SettingsController {
     public static final String SETTINGS_PASSWORD_VIEW_NAME = "settings/password";
     public static final String SETTINGS_PASSWORD_URL = "/settings/password";
 
-    private static final String SETTINGS_NOTIFICATIONS_VIEW_NAME = "settings/notifications";;
-    private static final String SETTINGS_NOTIFICATIONS_URL = "/settings/notifications";;
+    private static final String SETTINGS_NOTIFICATIONS_VIEW_NAME = "settings/notifications";
+    private static final String SETTINGS_NOTIFICATIONS_URL = "/settings/notifications";
+
+    private static final String SETTINGS_ACCOUNT_VIEW_NAME = "settings/account";
+    private static final String SETTINGS_ACCOUNT_URL = "/settings/account";
 
     private final AccountService accountService;
     private final ModelMapper modelMapper;
+    private final NicknameValidator nicknameValidator;
 
     @InitBinder("passwordForm")
-    public void initBinder(WebDataBinder webDataBinder) {
+    public void passwordFormInitBinder(WebDataBinder webDataBinder) {
         PasswordFormValidator passwordFormValidator = new PasswordFormValidator();
         webDataBinder.addValidators(passwordFormValidator);
+    }
+
+    @InitBinder("nicknameForm")
+    public void nicknameFormInitBinder(WebDataBinder webDataBinder) {
+        webDataBinder.addValidators(nicknameValidator);
     }
 
     @GetMapping(SETTINGS_PROFILE_URL)
@@ -96,5 +105,25 @@ public class SettingsController {
         accountService.updateAlarm(account, notifications);
         attributes.addFlashAttribute("message", "알람을 수정했습니다.");
         return "redirect:" + SETTINGS_NOTIFICATIONS_URL;
+    }
+
+    @GetMapping(SETTINGS_ACCOUNT_URL)
+    public String accountUpdateForm(@CurrentUser Account account, Model model) {
+        model.addAttribute(account);
+        model.addAttribute("nicknameForm", modelMapper.map(account, NicknameForm.class));
+        return SETTINGS_ACCOUNT_VIEW_NAME;
+    }
+
+    @PostMapping(SETTINGS_ACCOUNT_URL)
+    public String update(@CurrentUser Account account, @Valid NicknameForm nicknameForm,
+                                 Errors errors, Model model, RedirectAttributes attributes) {
+        if (errors.hasErrors()) {
+            model.addAttribute(account);
+            return SETTINGS_ACCOUNT_VIEW_NAME;
+        }
+
+        accountService.updateNickname(account, nicknameForm);
+        attributes.addFlashAttribute("message", "닉네임을 수정했습니다.");
+        return "redirect:" + SETTINGS_ACCOUNT_URL;
     }
 }

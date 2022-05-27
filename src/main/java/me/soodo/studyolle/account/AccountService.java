@@ -2,6 +2,7 @@ package me.soodo.studyolle.account;
 
 import lombok.RequiredArgsConstructor;
 import me.soodo.studyolle.domain.Account;
+import me.soodo.studyolle.settings.NicknameForm;
 import me.soodo.studyolle.settings.Notifications;
 import me.soodo.studyolle.settings.Profile;
 import org.modelmapper.ModelMapper;
@@ -99,6 +100,11 @@ public class AccountService implements UserDetailsService {
 
     public void updateAlarm(Account account, Notifications notifications) {
         modelMapper.map(notifications, account);
+        accountRepository.save(account);
+    }
+
+    public void updateNickname(Account account, NicknameForm nicknameForm) {
+        modelMapper.map(nicknameForm, account);
         accountRepository.save(account);
     }
 }
