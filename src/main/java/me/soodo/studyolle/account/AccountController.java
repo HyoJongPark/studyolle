@@ -59,25 +59,6 @@ public class AccountController {
         return view;
     }
 
-    @GetMapping("/checked-email")
-    public String checkedEmail(String token, String email, Model model) {
-        Account account = accountRepository.findByEmail(email);
-        String view = "account/checked-email";
-        if (account == null) {
-            model.addAttribute("error", "wrong.email");
-            return view;
-        }
-        if (!account.isValidToken(token)) {
-            model.addAttribute("error", "wrong.token");
-            return view;
-        }
-
-        accountService.completeSignUp(account);
-        model.addAttribute("numberOfUser", accountRepository.count());
-        model.addAttribute("nickname", account.getNickname());
-        return view;
-    }
-
     @GetMapping("/check-email")
     public String checkEmail(@CurrentUser Account account, Model model) {
         model.addAttribute("email", account.getEmail());
