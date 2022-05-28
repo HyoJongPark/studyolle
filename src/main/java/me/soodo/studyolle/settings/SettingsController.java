@@ -4,14 +4,15 @@ import lombok.RequiredArgsConstructor;
 import me.soodo.studyolle.account.AccountService;
 import me.soodo.studyolle.account.CurrentUser;
 import me.soodo.studyolle.domain.Account;
+import me.soodo.studyolle.domain.Tag;
+import me.soodo.studyolle.tag.TagRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
@@ -38,6 +39,7 @@ public class SettingsController {
     private final AccountService accountService;
     private final ModelMapper modelMapper;
     private final NicknameValidator nicknameValidator;
+    private final TagRepository tagRepository;
 
     @InitBinder("passwordForm")
     public void passwordFormInitBinder(WebDataBinder webDataBinder) {
@@ -136,9 +138,16 @@ public class SettingsController {
         return SETTINGS_TAGS_VIEW_NAME;
     }
 
-    @PostMapping(SETTINGS_TAGS_URL)
-    public String updateTags(@CurrentUser Account account, Model model) {
-        model.addAttribute(account);
-        return SETTINGS_TAGS_VIEW_NAME;
+    @PostMapping(SETTINGS_TAGS_URL + "/add")
+    @ResponseBody
+    public ResponseEntity updateTags(@CurrentUser Account account, @RequestBody TagForm tagForm) {
+        String title = tagForm.getTagTitle();
+        Tag tag = tagRepository.findByTitle(title);
+        if (tag == null) {
+            tag = tagRepository.save(Tag.builder().title(title).build());
+        }
+
+        accountService.addTag(account, tag);
+        return ResponseEntity.ok().build();
     }
 }

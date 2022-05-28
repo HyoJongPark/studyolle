@@ -2,6 +2,7 @@ package me.soodo.studyolle.account;
 
 import lombok.RequiredArgsConstructor;
 import me.soodo.studyolle.domain.Account;
+import me.soodo.studyolle.domain.Tag;
 import me.soodo.studyolle.settings.NicknameForm;
 import me.soodo.studyolle.settings.Notifications;
 import me.soodo.studyolle.settings.Profile;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -106,5 +108,10 @@ public class AccountService implements UserDetailsService {
     public void updateNickname(Account account, NicknameForm nicknameForm) {
         modelMapper.map(nicknameForm, account);
         accountRepository.save(account);
+    }
+
+    public void addTag(Account account, Tag tag) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        byId.ifPresent(a -> a.getTags().add(tag));
     }
 }
