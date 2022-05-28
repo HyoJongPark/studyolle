@@ -32,6 +32,9 @@ public class SettingsController {
     private static final String SETTINGS_ACCOUNT_VIEW_NAME = "settings/account";
     private static final String SETTINGS_ACCOUNT_URL = "/settings/account";
 
+    private static final String SETTINGS_TAGS_VIEW_NAME = "settings/tags";
+    private static final String SETTINGS_TAGS_URL = "/settings/tags";
+
     private final AccountService accountService;
     private final ModelMapper modelMapper;
     private final NicknameValidator nicknameValidator;
@@ -115,7 +118,7 @@ public class SettingsController {
     }
 
     @PostMapping(SETTINGS_ACCOUNT_URL)
-    public String update(@CurrentUser Account account, @Valid NicknameForm nicknameForm,
+    public String updateAccount(@CurrentUser Account account, @Valid NicknameForm nicknameForm,
                                  Errors errors, Model model, RedirectAttributes attributes) {
         if (errors.hasErrors()) {
             model.addAttribute(account);
@@ -125,5 +128,17 @@ public class SettingsController {
         accountService.updateNickname(account, nicknameForm);
         attributes.addFlashAttribute("message", "닉네임을 수정했습니다.");
         return "redirect:" + SETTINGS_ACCOUNT_URL;
+    }
+
+    @GetMapping(SETTINGS_TAGS_URL)
+    public String tagsUpdateForm(@CurrentUser Account account, Model model) {
+        model.addAttribute(account);
+        return SETTINGS_TAGS_VIEW_NAME;
+    }
+
+    @PostMapping(SETTINGS_TAGS_URL)
+    public String updateTags(@CurrentUser Account account, Model model) {
+        model.addAttribute(account);
+        return SETTINGS_TAGS_VIEW_NAME;
     }
 }
