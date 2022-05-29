@@ -3,6 +3,7 @@ package me.soodo.studyolle.account;
 import lombok.RequiredArgsConstructor;
 import me.soodo.studyolle.domain.Account;
 import me.soodo.studyolle.domain.Tag;
+import me.soodo.studyolle.domain.Zone;
 import me.soodo.studyolle.settings.NicknameForm;
 import me.soodo.studyolle.settings.Notifications;
 import me.soodo.studyolle.settings.Profile;
@@ -118,5 +119,20 @@ public class AccountService implements UserDetailsService {
     public void removeTag(Account account, Tag tag) {
         Optional<Account> byId = accountRepository.findById(account.getId());
         byId.ifPresent(a -> a.getTags().remove(tag));
+    }
+
+    public void addZone(Account account, Zone zone) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        byId.ifPresent(a -> a.getZones().add(zone));
+    }
+
+    public Set<Zone> getZones(Account account) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        return byId.orElseThrow().getZones();
+    }
+
+    public void removeZone(Account account, Zone zone) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        byId.ifPresent(a -> a.getZones().remove(zone));
     }
 }
