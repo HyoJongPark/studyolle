@@ -32,14 +32,14 @@ public class SettingsController {
     public static final String SETTINGS_PASSWORD_VIEW_NAME = "settings/password";
     public static final String SETTINGS_PASSWORD_URL = "/settings/password";
 
-    private static final String SETTINGS_NOTIFICATIONS_VIEW_NAME = "settings/notifications";
-    private static final String SETTINGS_NOTIFICATIONS_URL = "/settings/notifications";
+    public static final String SETTINGS_NOTIFICATIONS_VIEW_NAME = "settings/notifications";
+    public static final String SETTINGS_NOTIFICATIONS_URL = "/settings/notifications";
 
-    private static final String SETTINGS_ACCOUNT_VIEW_NAME = "settings/account";
-    private static final String SETTINGS_ACCOUNT_URL = "/settings/account";
+    public static final String SETTINGS_ACCOUNT_VIEW_NAME = "settings/account";
+    public static final String SETTINGS_ACCOUNT_URL = "/settings/account";
 
-    private static final String SETTINGS_TAGS_VIEW_NAME = "settings/tags";
-    private static final String SETTINGS_TAGS_URL = "/settings/tags";
+    public static final String SETTINGS_TAGS_VIEW_NAME = "settings/tags";
+    public static final String SETTINGS_TAGS_URL = "/settings/tags";
 
     private final AccountService accountService;
     private final ModelMapper modelMapper;
