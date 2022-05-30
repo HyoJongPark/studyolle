@@ -1,6 +1,8 @@
 package me.soodo.studyolle.account;
 
 import me.soodo.studyolle.domain.Account;
+import me.soodo.studyolle.mail.EmailMessage;
+import me.soodo.studyolle.mail.EmailService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +37,7 @@ class AccountControllerTest {
     private AccountRepository accountRepository;
 
     @MockBean
-    JavaMailSender mailSender;
+    EmailService emailService;
 
     @DisplayName("회원 가입 화면이 보이는지 테스트")
     @Test
@@ -70,14 +72,14 @@ class AccountControllerTest {
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/"))
-                .andExpect(authenticated().withUsername("email@email.com"));
+                .andExpect(authenticated().withUsername("park"));
 
         Account account = accountRepository.findByEmail("email@email.com");
         assertNotNull(account);
 
         assertNotEquals(account.getPassword(), "12345678");
         assertNotNull(account.getEmailCheckToken());
-        then(mailSender).should().send(any(SimpleMailMessage.class));
+        then(emailService).should().sendEmail(any(EmailMessage.class));
     }
 
     @DisplayName("인증 메일 확인 - 입력값 오류")
