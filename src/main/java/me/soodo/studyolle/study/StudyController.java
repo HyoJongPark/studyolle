@@ -48,7 +48,7 @@ public class StudyController {
         }
 
         Study newStudy = studyService.createNewStudy(modelMapper.map(studyForm, Study.class), account);
-        return "redirect:/study/" + getPath(newStudy);
+        return "redirect:/study/" + newStudy.getEncodedPath();
     }
 
     @GetMapping("/study/{path}")
@@ -66,7 +66,17 @@ public class StudyController {
         return "study/members";
     }
 
-    private String getPath(Study study) {
-        return URLEncoder.encode(study.getPath(), StandardCharsets.UTF_8);
+    @GetMapping("/study/{path}/join")
+    public String joinStudy(@CurrentUser Account account, @PathVariable String path) {
+        Study study = studyService.getStudyToUpdateMember(account, path);
+        studyService.addMember(study, account);
+        return "redirect:/study/" + study.getEncodedPath() + "/members";
+    }
+
+    @GetMapping("/study/{path}/leave")
+    public String leaveStudy(@CurrentUser Account account, @PathVariable String path) {
+        Study study = studyService.getStudyToUpdateMember(account, path);
+        studyService.removeMember(study, account);
+        return "redirect:/study/" + study.getEncodedPath() + "/members";
     }
 }
