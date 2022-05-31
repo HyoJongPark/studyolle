@@ -48,13 +48,14 @@ public class StudyController {
         }
 
         Study newStudy = studyService.createNewStudy(modelMapper.map(studyForm, Study.class), account);
-        return "redirect:/study/" + URLEncoder.encode(newStudy.getPath(), StandardCharsets.UTF_8);
+        return "redirect:/study/" + getPath(newStudy);
     }
 
     @GetMapping("/study/{path}")
     public String viewStudy(@CurrentUser Account account, @PathVariable String path, Model model) {
+        Study study = studyService.getStudy(path);
         model.addAttribute(account);
-        model.addAttribute(studyRepository.findByPath(path));
+        model.addAttribute(study);
         return "study/view";
     }
 
@@ -63,5 +64,9 @@ public class StudyController {
         model.addAttribute(account);
         model.addAttribute(studyRepository.findByPath(path));
         return "study/members";
+    }
+
+    private String getPath(Study study) {
+        return URLEncoder.encode(study.getPath(), StandardCharsets.UTF_8);
     }
 }
