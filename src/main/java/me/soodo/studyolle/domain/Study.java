@@ -14,6 +14,12 @@ import java.util.Set;
         @NamedAttributeNode("zones"),
         @NamedAttributeNode("managers"),
         @NamedAttributeNode("members")})
+@NamedEntityGraph(name = "Study.withTagsAndManagers", attributeNodes = {
+        @NamedAttributeNode("tags"),
+        @NamedAttributeNode("managers")})
+@NamedEntityGraph(name = "Study.withZonesAndManagers", attributeNodes = {
+        @NamedAttributeNode("zones"),
+        @NamedAttributeNode("managers")})
 @Getter @Setter @EqualsAndHashCode(of = "id")
 @Builder @AllArgsConstructor @NoArgsConstructor
 public class Study {
@@ -76,5 +82,9 @@ public class Study {
 
     public boolean isManager(UserAccount userAccount) {
         return this.managers.contains(userAccount.getAccount());
+    }
+
+    public String getImage() {
+        return image != null ? image : "/images/default_banner.png";
     }
 }

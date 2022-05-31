@@ -9,6 +9,7 @@ import me.soodo.studyolle.domain.Account;
 import me.soodo.studyolle.domain.Tag;
 import me.soodo.studyolle.domain.Zone;
 import me.soodo.studyolle.tag.TagRepository;
+import me.soodo.studyolle.tag.TagService;
 import me.soodo.studyolle.zone.ZoneRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +50,7 @@ public class SettingsController {
     private final AccountService accountService;
     private final ModelMapper modelMapper;
     private final NicknameValidator nicknameValidator;
+    private final TagService tagService;
     private final TagRepository tagRepository;
     private final ZoneRepository zoneRepository;
     private final ObjectMapper objectMapper;
@@ -159,12 +161,7 @@ public class SettingsController {
     @PostMapping(SETTINGS_TAGS_URL + "/add")
     @ResponseBody
     public ResponseEntity updateTags(@CurrentUser Account account, @RequestBody TagForm tagForm) {
-        String title = tagForm.getTagTitle();
-        Tag tag = tagRepository.findByTitle(title);
-        if (tag == null) {
-            tag = tagRepository.save(Tag.builder().title(title).build());
-        }
-
+        Tag tag = tagService.findOrCreateNew(tagForm);
         accountService.addTag(account, tag);
         return ResponseEntity.ok().build();
     }
