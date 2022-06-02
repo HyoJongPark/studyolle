@@ -68,7 +68,7 @@ public class EventController {
 
     @GetMapping("/events")
     public String viewStudyEvents(@CurrentUser Account account, @PathVariable String path, Model model) {
-        Study study = studyService.getStudyToUpdateStatus(account, path);
+        Study study = studyService.getStudy(path);
         model.addAttribute(account);
         model.addAttribute(study);
 

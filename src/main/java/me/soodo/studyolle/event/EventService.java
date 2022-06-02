@@ -23,12 +23,4 @@ public class EventService {
 
         return eventRepository.save(event);
     }
-
-    public Event findEvents(Event event, Study study, Account account) {
-        event.setCreatedBy(account);
-        event.setCreatedDateTime(LocalDateTime.now());
-        event.setStudy(study);
-
-        return eventRepository.save(event);
-    }
 }
