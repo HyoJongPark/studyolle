@@ -2,6 +2,7 @@ package me.soodo.studyolle.event;
 
 import lombok.RequiredArgsConstructor;
 import me.soodo.studyolle.domain.Account;
+import me.soodo.studyolle.domain.Enrollment;
 import me.soodo.studyolle.domain.Event;
 import me.soodo.studyolle.domain.Study;
 import org.modelmapper.ModelMapper;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 public class EventService {
 
     private final EventRepository eventRepository;
+    private final EnrollmentRepository enrollmentRepository;
     private final ModelMapper modelMapper;
 
     public Event createEvent(Event event, Study study, Account account) {
@@ -28,9 +30,32 @@ public class EventService {
 
     public void updateEvent(Event event, EventForm eventForm) {
         modelMapper.map(eventForm, event);
+        event.acceptWaitingList();
     }
 
     public void deleteEvent(Event event) {
         eventRepository.delete(event);
+    }
+
+    public void newEnrollment(Account account, Event event) {
+        if (!enrollmentRepository.existsByAccountAndEvent(account, event)) {
+            Enrollment enrollment = new Enrollment();
+            enrollment.setAccount(account);
+            enrollment.setEnrolledAt(LocalDateTime.now());
+            enrollment.setAccepted(event.isAbleToAcceptWaitingEnrollment());
+
+            enrollment.setEvent(event);
+            event.getEnrollments().add(enrollment);
+
+            enrollmentRepository.save(enrollment);
+        }
+    }
+
+    public void cancelEnrollment(Account account, Event event) {
+        Enrollment enrollment = enrollmentRepository.findByAccountAndEvent(account, event);
+        event.removeEnrollment(enrollment);
+        enrollmentRepository.delete(enrollment);
+
+        event.acceptNextEnrollment();
     }
 }

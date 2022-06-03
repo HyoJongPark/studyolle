@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
@@ -75,7 +76,7 @@ public class EventController {
         List<Event> events = eventRepository.findByStudyOrderByStartDateTime(study);
         List<Event> newEvents = new ArrayList<>();
         List<Event> oldEvents = new ArrayList<>();
-        events.forEach(e ->{
+        events.forEach(e -> {
             if (e.getEndDateTime().isBefore(LocalDateTime.now())) {
                 oldEvents.add(e);
             } else {
@@ -103,7 +104,7 @@ public class EventController {
 
     @PostMapping("/events/{id}/edit")
     public String updateEventSubmit(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id,
-                                  @Valid EventForm eventForm, Errors errors, Model model) {
+                                    @Valid EventForm eventForm, Errors errors, Model model) {
         Study study = studyService.getStudyToUpdate(account, path);
         Event event = eventRepository.findById(id).orElseThrow();
         eventForm.setEventType(event.getEventType());
@@ -125,5 +126,21 @@ public class EventController {
         Study study = studyService.getStudyToUpdateStatus(account, path);
         eventService.deleteEvent(eventRepository.findById(id).orElseThrow());
         return "redirect:/study/" + study.getEncodedPath() + "/events";
+    }
+
+    @PostMapping("/events/{id}/enroll")
+    public String newEnrollment(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id) {
+        Study study = studyService.getStudyToEnroll(path);
+        eventService.newEnrollment(account, eventRepository.findById(id).orElseThrow());
+
+        return "redirect:/study/" + study.getEncodedPath() + "/events/" + id;
+    }
+
+    @PostMapping("/events/{id}/disenroll")
+    public String cancelEnrollment(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id) {
+        Study study = studyService.getStudyToEnroll(path);
+        eventService.cancelEnrollment(account, eventRepository.findById(id).orElseThrow());
+
+        return "redirect:/study/" + study.getEncodedPath() + "/events/" + id;
     }
 }
