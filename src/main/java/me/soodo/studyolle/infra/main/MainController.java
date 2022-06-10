@@ -3,16 +3,19 @@ package me.soodo.studyolle.infra.main;
 import lombok.RequiredArgsConstructor;
 import me.soodo.studyolle.modules.account.CurrentUser;
 import me.soodo.studyolle.modules.account.Account;
-import me.soodo.studyolle.modules.notification.NotificationRepository;
+import me.soodo.studyolle.modules.study.Study;
+import me.soodo.studyolle.modules.study.StudyRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
 public class MainController {
 
-    private final NotificationRepository notificationRepository;
+    private final StudyRepository studyRepository;
 
     @GetMapping("/")
     public String home(@CurrentUser Account account, Model model) {
@@ -20,14 +23,20 @@ public class MainController {
             model.addAttribute(account);
         }
 
-        long count = notificationRepository.countByAccountAndChecked(account, false);
-        model.addAttribute("hasNotification", count > 0);
-
         return "index";
     }
 
     @GetMapping("/login")
     public String login() {
         return "/login";
+    }
+
+    @GetMapping("/search/study")
+    public String searchStudy(String keyword, Model model) {
+        List<Study> studyList = studyRepository.findByKeyword(keyword);
+
+        model.addAttribute(studyList);
+        model.addAttribute("keyword", keyword);
+        return "search";
     }
 }
