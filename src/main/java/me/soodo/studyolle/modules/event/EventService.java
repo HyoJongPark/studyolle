@@ -38,11 +38,13 @@ public class EventService {
         modelMapper.map(eventForm, event);
         event.acceptWaitingList();
         eventPublisher.publishEvent(new StudyUpdateEvent(event.getStudy(),
-                "모임이 취소되었습니다."));
+                "모임이 수되었습니다."));
     }
 
     public void deleteEvent(Event event) {
         eventRepository.delete(event);
+        eventPublisher.publishEvent(new StudyUpdateEvent(event.getStudy(),
+                "모임이 취소되었습니다."));
     }
 
     public void newEnrollment(Account account, Event event) {
