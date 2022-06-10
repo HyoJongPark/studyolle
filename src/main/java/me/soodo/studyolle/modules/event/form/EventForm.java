@@ -1,6 +1,7 @@
-package me.soodo.studyolle.modules.event;
+package me.soodo.studyolle.modules.event.form;
 
 import lombok.Data;
+import me.soodo.studyolle.modules.event.EventType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Min;

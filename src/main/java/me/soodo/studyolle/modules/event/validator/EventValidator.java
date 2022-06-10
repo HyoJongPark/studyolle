@@ -1,5 +1,7 @@
-package me.soodo.studyolle.modules.event;
+package me.soodo.studyolle.modules.event.validator;
 
+import me.soodo.studyolle.modules.event.Event;
+import me.soodo.studyolle.modules.event.form.EventForm;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

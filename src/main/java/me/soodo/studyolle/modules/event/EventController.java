@@ -3,6 +3,8 @@ package me.soodo.studyolle.modules.event;
 import lombok.RequiredArgsConstructor;
 import me.soodo.studyolle.modules.account.CurrentUser;
 import me.soodo.studyolle.modules.account.Account;
+import me.soodo.studyolle.modules.event.form.EventForm;
+import me.soodo.studyolle.modules.event.validator.EventValidator;
 import me.soodo.studyolle.modules.study.Study;
 import me.soodo.studyolle.modules.study.StudyService;
 import org.modelmapper.ModelMapper;

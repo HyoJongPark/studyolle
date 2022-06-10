@@ -1,4 +1,7 @@
-package me.soodo.studyolle.modules.event;
+package me.soodo.studyolle.modules.event.event;
+
+import me.soodo.studyolle.modules.event.Enrollment;
+import me.soodo.studyolle.modules.event.event.EnrollmentEvent;
 
 public class EnrollmentRejectedEvent extends EnrollmentEvent {
 

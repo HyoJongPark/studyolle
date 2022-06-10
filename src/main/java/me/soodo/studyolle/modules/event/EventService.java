@@ -2,7 +2,11 @@ package me.soodo.studyolle.modules.event;
 
 import lombok.RequiredArgsConstructor;
 import me.soodo.studyolle.modules.account.Account;
+import me.soodo.studyolle.modules.event.event.EnrollmentAcceptedEvent;
+import me.soodo.studyolle.modules.event.event.EnrollmentRejectedEvent;
+import me.soodo.studyolle.modules.event.form.EventForm;
 import me.soodo.studyolle.modules.study.Study;
+import me.soodo.studyolle.modules.study.event.StudyUpdateEvent;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -24,6 +28,8 @@ public class EventService {
         event.setCreatedBy(account);
         event.setCreatedDateTime(LocalDateTime.now());
         event.setStudy(study);
+        eventPublisher.publishEvent(new StudyUpdateEvent(event.getStudy(),
+                "모임이 생성되었습니다."));
 
         return eventRepository.save(event);
     }
@@ -31,6 +37,8 @@ public class EventService {
     public void updateEvent(Event event, EventForm eventForm) {
         modelMapper.map(eventForm, event);
         event.acceptWaitingList();
+        eventPublisher.publishEvent(new StudyUpdateEvent(event.getStudy(),
+                "모임이 취소되었습니다."));
     }
 
     public void deleteEvent(Event event) {

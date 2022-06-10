@@ -1,7 +1,8 @@
-package me.soodo.studyolle.modules.event;
+package me.soodo.studyolle.modules.event.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import me.soodo.studyolle.modules.event.Enrollment;
 
 @Getter
 @RequiredArgsConstructor

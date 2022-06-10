@@ -6,7 +6,6 @@ import me.soodo.studyolle.infra.config.AppProperties;
 import me.soodo.studyolle.modules.account.Account;
 import me.soodo.studyolle.modules.account.AccountPredicates;
 import me.soodo.studyolle.modules.account.AccountRepository;
-import me.soodo.studyolle.modules.event.StudyUpdateEvent;
 import me.soodo.studyolle.modules.mail.EmailMessage;
 import me.soodo.studyolle.modules.mail.EmailService;
 import me.soodo.studyolle.modules.notification.Notification;

@@ -2,7 +2,7 @@ package me.soodo.studyolle.modules.study;
 
 import lombok.RequiredArgsConstructor;
 import me.soodo.studyolle.modules.account.Account;
-import me.soodo.studyolle.modules.event.StudyUpdateEvent;
+import me.soodo.studyolle.modules.study.event.StudyUpdateEvent;
 import me.soodo.studyolle.modules.study.event.StudyCreatedEvent;
 import me.soodo.studyolle.modules.tag.Tag;
 import me.soodo.studyolle.modules.zone.Zone;

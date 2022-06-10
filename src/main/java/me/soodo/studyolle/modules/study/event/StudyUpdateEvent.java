@@ -1,4 +1,4 @@
-package me.soodo.studyolle.modules.event;
+package me.soodo.studyolle.modules.study.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
