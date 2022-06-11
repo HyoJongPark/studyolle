@@ -5,12 +5,16 @@ import me.soodo.studyolle.modules.account.Account;
 import me.soodo.studyolle.modules.study.event.StudyUpdateEvent;
 import me.soodo.studyolle.modules.study.event.StudyCreatedEvent;
 import me.soodo.studyolle.modules.tag.Tag;
+import me.soodo.studyolle.modules.tag.TagRepository;
 import me.soodo.studyolle.modules.zone.Zone;
+import net.bytebuddy.utility.RandomString;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashSet;
 
 import static me.soodo.studyolle.modules.study.StudyForm.VALID_PATH_PATTERN;
 
@@ -22,6 +26,7 @@ public class StudyService {
     private final StudyRepository studyRepository;
     private final ModelMapper modelMapper;
     private final ApplicationEventPublisher eventPublisher;
+    private final TagRepository tagRepository;
 
     public Study createNewStudy(Study study, Account account) {
         Study newStudy = studyRepository.save(study);
